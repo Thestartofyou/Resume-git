@@ -1,0 +1,44 @@
+import re
+from collections import Counter
+
+# Function to clean and extract words from text
+def clean_text(text):
+    text = text.lower()  # Convert to lowercase
+    text = re.sub(r'[^\w\s]', '', text)  # Remove punctuation
+    return text.split()
+
+# Function to calculate keyword match score
+def calculate_score(resume_keywords, job_keywords):
+    resume_counter = Counter(resume_keywords)
+    job_counter = Counter(job_keywords)
+    
+    # Initialize the score
+    score = 0
+    total_possible_score = len(job_keywords)
+    
+    # Compare resume and job keywords
+    for word in job_counter:
+        if word in resume_counter:
+            score += 1  # Add 1 point if the keyword matches
+    
+    # Calculate the percentage match
+    match_percentage = (score / total_possible_score) * 100
+    return score, match_percentage
+
+# Load and clean job posting and resume
+def load_text_from_file(filename):
+    with open(filename, 'r') as file:
+        return clean_text(file.read())
+
+# Example usage
+resume_file = "resume.txt"  # Your resume file
+job_posting_file = "job_posting.txt"  # Job posting file from LinkedIn
+
+resume_keywords = load_text_from_file(resume_file)
+job_keywords = load_text_from_file(job_posting_file)
+
+# Calculate score and match percentage
+score, match_percentage = calculate_score(resume_keywords, job_keywords)
+
+print(f"Match Score: {score}")
+print(f"Match Percentage: {match_percentage:.2f}%")
